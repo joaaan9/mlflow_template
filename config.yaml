@@ -1,0 +1,17 @@
+# config.yaml file
+current_config:
+    configuration
+
+configuration:
+    name:
+    sql:
+    storage: local
+    target_metric:
+    query_predict_data:
+    extra: []
+    mlflow:
+        registered_model_name:
+        model_version:
+        tracking_uri:
+        experiment_name:
+        tags:
