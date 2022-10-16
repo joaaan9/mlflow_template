@@ -2,7 +2,11 @@
 
 def create_features(df):
     """
-    Transform data
+    Transform data for
+    :param df: dataframe on which we are creating the features
+    :return:
     """
+    res = {}
+    return res
 
 

@@ -1,10 +1,9 @@
-from src.models.predict_model import get_model
-from src.visualitzation.utils import print_roc_auc, print_feature_importance
-from utils.utils import load_data
+from src.visualitzation.utils import print_feature_importance, print_confusion_matrix, print_roc_auc
+from utils.utils import get_model_mlflow, load_data
 
 
 def workflow():
-    model = get_model(config.get_value("registered_model_name"))
+    model = get_model_mlflow()
     pred_dev = load_data("interim", name="pred_dev")
     pred_test = load_data("interim", name="pred_test")
     pred_all = load_data("interim", name="pred_all")
@@ -16,6 +15,7 @@ def workflow():
         ]
     )
     print_feature_importance(model)
+    print_confusion_matrix(pred_all, threshold=0.6)
 
 
 if __name__ == '__main__':

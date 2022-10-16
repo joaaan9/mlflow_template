@@ -1,32 +1,20 @@
-import mlflow
-from mlflow.tracking import MlflowClient
-from functions import prediction, get_metrics
-from utils.config import config
-from utils.decorators import mlflow_decorator
-from utils.utils import load_prediction_data
+from functions import prediction
+import pandas as pd
+from utils.decorators.mlflow_decorator import mlflow_tracking
+from utils.utils import load_prediction_data, get_model_mlflow, save_data, get_path
 
 
-def get_model():
-    model_name = config.get_var("mlflow")["registered_model_name"]
-    model_version = config.get_var("mlflow")["model_version"]
-    client = MlflowClient()
-    model_uri = client.get_model_version_download_uri(model_name, model_version)
-    mdl = mlflow.lightgbm.load_model(model_uri)
-    return mdl
-
-
-@mlflow_decorator
+@mlflow_tracking
 def workflow():
     """
     Loads data from local or from a query specified in config file, and make a prediction with corresponding metrics
     :return:
     """
     df = load_prediction_data()
-    mdl = get_model()
+    mdl = get_model_mlflow()
     df_pred = prediction(mdl, df)
-    metrics = get_metrics(df, df_pred)
-    res = []
-    res["metrics"] = metrics
+    save_data(pd.DataFrame(df_pred), "processed", "predict_", type="csv")
+    res = {"artifacts": get_path("processed", "predict_")}
     return res
 
 

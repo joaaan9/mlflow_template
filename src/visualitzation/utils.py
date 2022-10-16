@@ -1,6 +1,12 @@
+import numpy as np
+from matplotlib import pyplot as plt
+from numpy import mean, std
+from pandas_profiling import ProfileReport
+from sklearn.metrics import roc_curve, auc, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.model_selection import cross_val_score
+
 from utils.config import config
 import pandas as pd
-import plt
 
 def distribution(df):
     """
@@ -50,14 +56,14 @@ def print_feature_importance(mdl):
 
 def print_roc_auc(listdict):
     model = config.get_value("name")
-    title = f"{model} - ROC Curve"
+    title = f"Churn {model} - ROC Curve"
     plt.figure()
     lw = 2
     plt.plot([0, 1], [0, 1], color=plt.cm.tab10.colors[0], lw=lw, linestyle="--")
 
     for n, i in enumerate(listdict):
         fpr, tpr, thresholds = roc_curve(i["prediction"]["target"], i["prediction"]["proba"])
-        fpr_to_plot, tpr_to_plot, thresholds_to_plot = function_utils.points_to_plot(
+        fpr_to_plot, tpr_to_plot, thresholds_to_plot = points_to_plot(
             fpr, tpr, thresholds, threshold_to_find=[0.25, 0.5, 0.7]
         )
         plt.scatter(fpr_to_plot, tpr_to_plot, color=plt.cm.tab10.colors[n + 1])
@@ -86,7 +92,7 @@ def print_roc_auc(listdict):
     return plt, roc_auc
 
 
-def print_confusion_matrix(prediction, title, threshold=0.5):
+def print_confusion_matrix(prediction, title="Confusion matrix", threshold=0.5):
     prediction["binarized_boolean"] = prediction["proba"] >= threshold
     cm = confusion_matrix(prediction["target"], prediction["binarized_boolean"])
     _ = ConfusionMatrixDisplay(cm).plot()
@@ -113,7 +119,7 @@ def points_to_plot(fpr, tpr, thresholds, threshold_to_find):
     tpr_to_plot = []
     thresholds_to_plot = []
     for element in threshold_to_find:
-        index = function_utils.find_nearest(thresholds, element)
+        index = find_nearest(thresholds, element)
         fpr_to_plot.append(fpr[index])
         tpr_to_plot.append(tpr[index])
         thresholds_to_plot.append(thresholds[index])

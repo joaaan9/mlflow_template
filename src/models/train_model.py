@@ -1,24 +1,23 @@
 from src.models.functions import get_metrics, model
-from utils.decorators import mlflow_decorator
-from utils.utils import load_data, save_data
+from utils.decorators.mlflow_decorator import mlflow_tracking
+from utils.utils import load_data, save_data, save_model
 
 
-@mlflow_decorator
+@mlflow_tracking
 def workflow():
-    df_today = load_data("interim", name="today")
-    df_scenarios = load_data("interim", name="scenarios")
+    df_today = load_data("interim", name="today_")
+    df_scenarios = load_data("interim", name="scenarios_")
 
-    df, mdl, important_variables, pred_dev, pred_test, pred_all, feat_test = model(df_scenarios)
-    metrics = get_metrics(feat_test, pred_test)
+    df, mdl, important_variables, pred_dev, pred_test, pred_all = model(df_scenarios)
+    metrics = get_metrics(pred_all["target"], pred_all["pred_target"])
 
-    save_data(pred_dev, "processed", name="dev")
-    save_data(pred_test, "processed", name="test")
-    save_data(pred_all, "processed", name="all")
-    save_data(feat_test, "processed", name="feat_test")
+    save_model(mdl)
 
-    res = []
-    res["model"] = mdl
-    res["metrics"] = metrics
+    save_data(pred_dev, "processed", name="dev_")
+    save_data(pred_test, "processed", name="test_")
+    save_data(pred_all, "processed", name="all_")
+
+    res = {"model": mdl, "metrics": metrics}
     return res
 
 

@@ -1,11 +1,11 @@
 # config.yaml file
 current_config:
-    configuration
+    current
 
-configuration:
+current:
     name:
     sql:
-    storage: local
+    storage:
     target_metric:
     query_predict_data:
     extra: []
